@@ -70,54 +70,33 @@ class Squaredle:
         
         self.valid = []
         self.depth = min_length
+        self.wordlist = wordlist
         
     def solve(self) -> list[str]:
         for y, row in enumerate(self.rows):
             for x, letter in enumerate(row):
                 if letter:
-                    self.dfs()
+                    self.dfs(np.array([y, x]), [], "")
                     
-                    self.valid += self.dfs([y, x])
-                    
-                    
-                    ###### testing a only
-                    return "done a"
+        return set(self.valid) # same words can be formed from different starting points
         
-    def dfs(self, start: list[int]): # depth first search
-        seen = np.zeros(self.rows.shape)
-        neighbours = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dy or dx]
-        stack = [start]
-         = ""
-        
-        #note to self: arr[row, col]
-            # gen valid neighbours
-            # visit and update seen
-            # check valid word
-            # neighbours
-            # visit update seen 
-        
-        while len(stack):
-            current = stack.pop()
-            seen[*current] = 1
-            word
+    def dfs(self, pos: list[int], seen: list[list[int]], path: str) -> None:
+        # update & check word
+        path += self.rows[*pos]
+
+        if len(path) >= self.depth and self.wordlist.search(path):
+            self.valid.append(path)
             
-            print(current, self.rows[*current]) ######### 
-            
-            # check valid neighbours and push
-            for n in neighbours:
-                y, x = np.add(current, n)
-                
-                if not (0 <= x < len(seen[0]) and 0 <= y < len(seen)) or not self.rows[y, x]:
-                    continue
-                
-                stack.append()
-                
-                
-                # ensure word min 4 length to begin checking
-                    
+        # check neighbours and continue dfs
+        for n in [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dy or dx]:
+            new = np.add(pos, n)
         
-        return []
-    
+            # bounds + valid space
+            if not (np.all(0 <= new) and np.all(new < self.rows.shape)) or not self.rows[*new] or new.tolist() in seen:
+                continue
+            
+            self.dfs(new, seen + [pos.tolist()], path)
+            
     def clear(self) -> None:
         self.valid = []
     
@@ -165,10 +144,11 @@ def main() -> None:
         for i in ("'", ' ', '\n'):
             wordlist = wordlist.replace(i, "")
             
-    trie = build_trie(wordlist)
+    trie = build_trie(wordlist.split(","))
     squaredle = parse_input(trie)
-    
-    print(squaredle.solve())
+
+    for i in sorted(squaredle.solve(), key=len):
+        print(i)
 
 if __name__ == "__main__":
     main()
