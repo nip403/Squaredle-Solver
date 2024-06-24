@@ -1,18 +1,7 @@
-from squaredle_utils import Trie, Squaredle
-import numpy as np
+from squaredle_utils import Trie, Squaredle, build_trie
 import os
 
-__FP__ = os.path.dirname(__file__)
-    
-def build_trie(words: list[str]) -> Trie:
-    root = Trie("")
-    
-    for i in words:
-        root.insert(i.lower())
-        
-    root.alphabetise()
-    
-    return root        
+__FP__ = os.path.dirname(__file__)  
 
 def parse_input(trie: Trie) -> list[str]:
     while True:
@@ -51,7 +40,7 @@ def main() -> None:
     trie = build_trie(wordlist.split(","))
     squaredle = parse_input(trie)
 
-    for i in sorted(squaredle.solve(), key=len):
+    for i in squaredle.solve():
         print(i)
 
 if __name__ == "__main__":

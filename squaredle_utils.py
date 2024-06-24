@@ -82,7 +82,7 @@ class Squaredle:
                 if letter:
                     self.dfs(np.array([y, x]), [], "") # dfs from each available letter in the squaredle grid
                     
-        return set(self.valid) # same words can be formed from different starting points
+        return sorted(set(self.valid), key=lambda x: (len(x), x)) # sorted set because same words can be formed from different starting points
         
     def dfs(self, pos: list[int], seen: set[tuple[int]], path: str) -> None:
         """Recursive depth first search
@@ -113,3 +113,13 @@ class Squaredle:
             
     def clear(self) -> None:
         self.valid = []
+        
+def build_trie(words: list[str]) -> Trie:
+    root = Trie("")
+    
+    for i in words:
+        root.insert(i.lower())
+        
+    root.alphabetise()
+    
+    return root      
